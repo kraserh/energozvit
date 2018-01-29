@@ -3,6 +3,17 @@
 *.dll
 *.so
 *.dylib
+*.ez.db
+energozvit
+
+# Documentation targets
+doc/*.png
+doc/*html
+
+# Project files
+*.sublime-project
+*.sublime-workspace
+Session.vim
 
 # Test binary, build with `go test -c`
 *.test
