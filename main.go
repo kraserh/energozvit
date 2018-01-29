@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+
+	"github.com/kraserh/energozvit/storage"
 )
 
 var (
@@ -25,27 +27,32 @@ func main() {
 
 func storageCreate() {
 	stdin := bufio.NewReader(os.Stdin)
-	var filePath string
-	for {
-		pwd, _ := os.Getwd()
-		fmt.Printf("Поточний каталог: %s\n", pwd)
-		fmt.Print("Введіть шлях до створюємого файла бази даних:")
-		if _, err := fmt.Scanln(&filePath); err == nil {
-			break
-		}
-		stdin.ReadString('\n') // скидаєм буфер вводу
-		fmt.Println("Помилка")
-	}
-	var dateStr string
+	// filePath
+	pwd, _ := os.Getwd()
+	fmt.Printf("Поточний каталог: %s\n", pwd)
+	fmt.Print("Введіть шлях до створюємого файла бази даних: ")
+	filePath, err := stdin.ReadString('\n')
+	check(err)
+	filePath = filePath[:len(filePath)-1]
+	// date
+	var date storage.Date
 	for {
 		fmt.Print("Введіть початкову дату (YYYY-MM): ")
-		if _, err := fmt.Scanln(&dateStr); err == nil {
+		dateStr, _ := stdin.ReadString('\n')
+		if date, err = storage.ParseDate(dateStr); err == nil {
 			break
 		}
-		stdin.ReadString('\n')
 		fmt.Println("Невірний формат дати")
 	}
+	fmt.Println(date, filePath)
 }
 
 func storageOpen(filePath string) {
+}
+
+func check(err error) {
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 }
