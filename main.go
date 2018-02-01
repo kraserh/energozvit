@@ -9,14 +9,17 @@ import (
 )
 
 var (
-	Version   string
+	// Version - версія програми
+	Version string
+	// BuildTime - дата збірки програми
 	BuildTime string
 )
 
 func main() {
 	switch len(os.Args) {
 	case 1:
-		storageCreate()
+		filePath := storageCreate()
+		storageOpen(filePath)
 	case 2:
 		storageOpen(os.Args[1])
 	default:
@@ -25,7 +28,7 @@ func main() {
 	}
 }
 
-func storageCreate() {
+func storageCreate() string {
 	stdin := bufio.NewReader(os.Stdin)
 	// filePath
 	pwd, _ := os.Getwd()
@@ -44,15 +47,22 @@ func storageCreate() {
 		}
 		fmt.Println("Невірний формат дати")
 	}
-	fmt.Println(date, filePath)
+	storage.CreateDB(filePath, date)
+	return filePath
 }
 
 func storageOpen(filePath string) {
 }
 
-func check(err error) {
+// check перериває програму якщо err містить помилку. Якщо вказано msg,
+// то заміть err виводиться вказане повідомлення.
+func check(err error, msg ...interface{}) {
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		if len(msg) > 0 {
+			fmt.Fprintln(os.Stderr, msg...)
+		} else {
+			fmt.Fprintln(os.Stderr, err)
+		}
 		os.Exit(1)
 	}
 }
