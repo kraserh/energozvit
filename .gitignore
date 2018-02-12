@@ -15,6 +15,9 @@ doc/*html
 *.sublime-workspace
 Session.vim
 
+# Backup files
+*~
+
 # Test binary, build with `go test -c`
 *.test
 

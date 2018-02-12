@@ -85,7 +85,7 @@ func OpenDB(filePath string) *DB {
 
 // Close закриває базу даних.
 func (db *DB) Close() error {
-	err := db.Close()
+	err := db.DB.Close()
 	return err
 }
 
