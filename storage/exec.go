@@ -253,7 +253,7 @@ func (db *DB) PlogCommit() error {
 		UPDATE stat
 		SET value = date((SELECT value FROM stat WHERE key = 'pDate'),
 			'+1 month', 'start of month')
-		WHERE key = 'pDate';`
+		WHERE key = 'pDate'`
 	_, err := db.Exec(query)
 	return err
 }
@@ -276,19 +276,28 @@ func (db *DB) PlogUpdate(pname string, energy int) error {
 
 ///////////////////////////////////////////////////////////////////////////
 
-func (db *DB) LimitInsert(substation, energy int) error {
-
-	return nil
+func (db *DB) LimitInsert(substation, energy int, date Date) error {
+	query := `
+		INSERT INTO limits (substation, energy, date)
+		VALUES (?, ?, ?)
+		`
+	_, err := db.Exec(query, substation, energy, date.timestring())
+	return err
 }
 
-func (db *DB) LimitUpdate(substation, energy int) error {
-
-	return nil
+func (db *DB) LimitUpdate(substation, energy int, date Date) error {
+	query := `
+		UPDATE limits SET energy = ?
+		WHERE substation = ? AND date = ?
+		`
+	_, err := db.Exec(query, energy, substation, date.timestring())
+	return err
 }
 
 ///////////////////////////////////////////////////////////////////////////
 
 func (db *DB) StatUpdate(key, value string) error {
-
-	return nil
+	query := `UPDATE stat SET value = ? WHERE key = ?`
+	_, err := db.Exec(query, value, key)
+	return err
 }

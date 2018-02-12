@@ -237,3 +237,38 @@ func TestPlogUpdate(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestLimitInsert(t *testing.T) {
+	date, err := ParseDate(initDate)
+	if err != nil {
+		t.Error(err)
+	}
+	err = db.LimitInsert(222, 10000, date)
+	if err != nil {
+		t.Error(err)
+	}
+	err = db.LimitInsert(208, 555, date)
+	if err != nil {
+		t.Error(err)
+	}
+	date = date.Add(1)
+	err = db.LimitInsert(222, 8000, date)
+	if err != nil {
+		t.Error(err)
+	}
+	err = db.LimitInsert(208, 1000, date)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestLimitUpdate(t *testing.T) {
+	date, err := ParseDate(initDate)
+	if err != nil {
+		t.Error(err)
+	}
+	err = db.LimitUpdate(208, 500, date)
+	if err != nil {
+		t.Error(err)
+	}
+}
