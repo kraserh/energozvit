@@ -92,7 +92,7 @@ CREATE VIEW mreport AS
 		END AS energy,
 		curlog.comment AS comment, curlog.date AS date
 	FROM curlog, mlog AS prevlog 
-	JOIN meter  ON curlog.idmeter = meter.id
+	JOIN meters  ON curlog.idmeter = meters.id
 	JOIN location ON idlocation = location.id
 	WHERE curlog.idmeter = prevlog.idmeter 
 		AND curlog.zone = prevlog.zone 
@@ -157,6 +157,22 @@ CREATE TRIGGER check_pDate
 	BEGIN
 		SELECT RAISE(IGNORE);
 	END;
+
+CREATE TRIGGER check_limval_insert
+	BEFORE INSERT ON mlog
+	WHEN NEW.value >= (SELECT limval FROM meters WHERE id = NEW.idmeter)
+	BEGIN
+		SELECT RAISE(ROLLBACK, 'limval out range');
+	END;
+
+
+CREATE TRIGGER check_limval_update
+	BEFORE UPDATE OF value ON mlog
+	WHEN NEW.value >= (SELECT limval FROM meters, mlog WHERE id = idmeter)
+	BEGIN
+		SELECT RAISE(ROLLBACK, 'limval out range');
+	END;
+
 
 CREATE TRIGGER delete_location
 	AFTER UPDATE OF edate ON location
