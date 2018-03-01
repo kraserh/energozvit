@@ -40,6 +40,19 @@ func (db *DB) LocationDelete(lname string) error {
 	return err
 }
 
+func (db *DB) getIdLocation(lname string) (int64, error) {
+	query := `
+		SELECT id
+		FROM location
+		WHERE lname = ? AND edate IS NULL`
+	var idLocation int64
+	err := db.QueryRow(query, lname).Scan(&idLocation)
+	if err == sql.ErrNoRows {
+		err = errors.New("відсутня площадка вимірювання")
+	}
+	return idLocation, err
+}
+
 ///////////////////////////////////////////////////////////////////////////
 
 type Meter struct {
@@ -54,14 +67,16 @@ type Meter struct {
 }
 
 func (db *DB) MeterInsert(m *Meter) error {
+	idLocation, err := db.getIdLocation(m.Lname)
+	if err != nil {
+		return err
+	}
 	query := `
 		INSERT INTO meters(idlocation, model, number, limval, 
 			ratio, numzones, sdate)
-		VALUES ((SELECT id FROM location
-				WHERE lname = ? AND edate IS NULL),
-			?, ?, ?, ?, ?, 
+		VALUES (?, ?, ?, ?, ?, ?, 
 			(SELECT value FROM stat WHERE key = 'mDate'))`
-	_, err := db.Exec(query, m.Lname, m.Model, m.Number, m.Limval,
+	_, err = db.Exec(query, idLocation, m.Model, m.Number, m.Limval,
 		m.Ratio, m.Numzones)
 	return err
 }
@@ -97,7 +112,8 @@ func (db *DB) MlogInsert(model, number string,
 		SELECT id, numzones
 		FROM meters
 		WHERE model = ? AND number =? AND edate IS NULL`
-	var id, numzones int
+	var id int64
+	var numzones int
 	err := db.QueryRow(queryMeter, model, number).Scan(&id, &numzones)
 	if err == sql.ErrNoRows {
 		return errors.New("відсутній лічильник")
@@ -205,13 +221,14 @@ type Part struct {
 }
 
 func (db *DB) PartInsert(p *Part) error {
+	idLocation, err := db.getIdLocation(p.Lname)
+	if err != nil {
+		return err
+	}
 	query := `
 		INSERT INTO parts (idlocation, pname, sdate)
-		VALUES ((SELECT id FROM location
-				WHERE lname = ? AND edate IS NULL), 
-			?,
-			(SELECT value FROM stat WHERE key = 'mDate'))`
-	_, err := db.Exec(query, p.Lname, p.Pname)
+		VALUES (?, ?, (SELECT value FROM stat WHERE key = 'mDate'))`
+	_, err = db.Exec(query, idLocation, p.Pname)
 	return err
 }
 
@@ -237,14 +254,24 @@ func (db *DB) PartDelete(pname string) error {
 ///////////////////////////////////////////////////////////////////////////
 
 func (db *DB) PlogInsert(pname string, energy int) error {
+	//
+	queryPart := `
+		SELECT id
+		FROM parts
+		WHERE pname = ? AND edate IS NULL`
+	var idPart int64
+	err := db.QueryRow(queryPart, pname).Scan(&idPart)
+	if err == sql.ErrNoRows {
+		return errors.New("відсутній підрозділ")
+	} else {
+		check(err)
+	}
+	//
 	query := `
 		INSERT OR REPLACE
 		INTO plog (idpart, energy, date)
-		VALUES ((SELECT id FROM parts
-			WHERE pname = ? AND edate IS NULL),
-			?,
-			(SELECT value FROM stat WHERE key = 'pDate'))`
-	_, err := db.Exec(query, pname, energy)
+		VALUES (?, ?, (SELECT value FROM stat WHERE key = 'pDate'))`
+	_, err = db.Exec(query, idPart, energy)
 	return err
 }
 

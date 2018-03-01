@@ -15,7 +15,7 @@ CREATE TABLE location (
 
 CREATE TABLE meters (
 	id         INTEGER PRIMARY KEY,
-	idlocation REFERENCES location(id),
+	idlocation REFERENCES location(id) NOT NULL,
 	model      TEXT    NOT NULL CHECK(model != ""),
 	number     TEXT    NOT NULL CHECK(number != ""),
 	limval     INTEGER NOT NULL CHECK(limval >= 10),
@@ -27,7 +27,7 @@ CREATE TABLE meters (
 
 
 CREATE TABLE mlog (
-	idmeter    REFERENCES meters(id),
+	idmeter    REFERENCES meters(id) NOT NULL,
 	zone       INTEGER NOT NULL CHECK(zone > 0),
 	value      INTEGER NOT NULL CHECK(value >= 0),
 	init       BOOL    NOT NULL DEFAULT 0,
@@ -38,14 +38,14 @@ CREATE TABLE mlog (
 
 CREATE TABLE parts (
 	id         INTEGER PRIMARY KEY,
-	idlocation REFERENCES location(id),
+	idlocation REFERENCES location(id) NOT NULL,
 	pname      TEXT    NOT NULL CHECK(pname != ""),
 	sdate      DATE    NOT NULL CHECK(sdate LIKE '____-__-__'),
 	edate      DATE             CHECK(edate LIKE '____-__-__')
 );
 
 CREATE TABLE plog (
-	idpart     REFERENCES parts(id),
+	idpart     REFERENCES parts(id) NOT NULL,
 	energy     INTEGER NOT NULL CHECK(energy >= 0),
 	date       TEXT    NOT NULL CHECK(date LIKE '____-__-__'),
 	PRIMARY KEY (idpart, date)
