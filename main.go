@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/kraserh/energozvit/gui"
 	"github.com/kraserh/energozvit/storage"
 )
 
@@ -52,6 +53,9 @@ func storageCreate() string {
 }
 
 func storageOpen(filePath string) {
+	db := storage.OpenDB(filePath)
+	defer db.Close()
+	gui.Start(db)
 }
 
 // check перериває програму якщо err містить помилку. Якщо вказано msg,
