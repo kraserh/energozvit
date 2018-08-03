@@ -6,7 +6,7 @@ import (
 	"github.com/kraserh/energozvit/storage"
 )
 
-//
+// Start запускає графічний інтерфейс
 func Start(db *storage.DB) {
 	gtk.Init(nil)
 	tw := dbvisual.NewTopWindow("ЕнергоЗвіт")
@@ -23,6 +23,10 @@ func Start(db *storage.DB) {
 		dbvisual.MenuItem{"Вихід", tw.Quit},
 	}
 	tw.SetMenu(mainMenu)
+	tw.SetDateControl()
+	tw.Date.SetMin(2010, 7)
+	tw.Date.SetMax(2018, 9)
+	tw.Date.Put(2018, 8)
 	tw.Start()
 }
 

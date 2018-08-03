@@ -11,8 +11,8 @@ import (
 // TopWindow вікно верхнього рівня для показу контенту та керування ним
 type TopWindow struct {
 	*gtk.Window
-	DB *storage.DB
-	//	Date *dateControl
+	DB   *storage.DB
+	Date *dateControl
 	//	Content     *Content
 	QuitFunc   func()
 	lockDialog bool
@@ -95,6 +95,14 @@ func (tw *TopWindow) SetMenu(menu []MenuItem) {
 		button.Connect("clicked", item.Callback)
 		tw.menuBox.PackStart(button, true, true, 1)
 	}
+}
+
+// SetDateControl встановлює блок контроля дати
+func (tw *TopWindow) SetDateControl() {
+	var frame *gtk.Frame
+	tw.Date, frame = newDateControl()
+	//tw.Date.setUpdateFunc(tw.UpdateContent)
+	tw.dateBox.PackStart(frame, true, true, 0)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
