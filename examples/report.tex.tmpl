@@ -1,0 +1,86 @@
+{{/* pdflatex -interaction=nonstopmode % */}}
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[ukrainian]{babel}
+\usepackage{multirow}
+
+\author{Kraserh}
+\title{Звіт про використану електроенергію за {{monthName}} {{year}} року}
+
+% Посилання та інформація в pdf файлах
+\usepackage[unicode]{hyperref} 
+\hypersetup{
+	pdfauthor={Kraserh},
+	pdftitle={Звіт про використану електроенергію за {{monthName}} {{year}} року},
+	pdfsubject={Звіт}
+}
+
+\usepackage{geometry}
+\geometry{top=2cm}
+\geometry{bottom=2cm}
+\geometry{left=2.0cm}
+\geometry{right=2.0cm}
+
+\renewcommand{\tabcolsep}{0.15cm} % Інтервал між стовпчиками
+\renewcommand{\arraystretch}{1.5} % Інтервал між рядками
+
+\begin{document}
+\sffamily % без засічок
+\noindent
+
+\pagestyle{empty} % нумерація сторінок вимкнено.
+
+\begin{center}
+	ПрАТ Рога і Копита\\
+	Звіт про використану електроенергію\\
+	за {{monthName}} {{year}} року
+\end{center}
+
+\begin{flushright}
+
+{\setlength{\arrayrulewidth}{0.2pt} %Товщина ліній в таблиці
+
+\begin{tabular}{|c|c|l|l|r|r|r|r|r|}
+	\hline
+	\multirow{2}{0.6cm}{\centering №  п/п} &
+	\multirow{2}{0.8cm}{\centering № КТП} &
+	\multirow{2}{3.5cm}{\centering Місце встановлення лічильника} &
+	\multirow{2}{1.8cm}{\centering № лічильн.} &
+	\multicolumn{2}{c|}{Показники} &
+	\multirow{2}{1.3cm}{\centering Різниця} &
+	\multirow{2}{1.1cm}{\centering Коеф. тр-ції} &
+	\multirow{2}{1.6cm}{\centering Всього (кВт.год)}\\
+
+	\cline{5-6}
+		& & & & Теперешні & Попередні & & & \\
+
+{{/* Записи таблиці */}}
+{{sortReportMonth "Госпдвір" "АВМ" "Контора"}}
+{{range $i, $P := reportMonth}}
+	\hline
+	\multirow{ {{.Lines}} }{*}{ {{add $i 1}} } &
+	\multirow{ {{.Lines}} }{*}{ {{.Substation}} } &
+	\multirow{ {{.Lines}} }{*}{ {{.Name}} } &
+	{{- range $n, $E := .Meters -}}
+		{{if $n -}} \cline{4-9} & & & {{end}}
+		\multirow{ {{len .Zones}} }{*}{ {{.Serial}} } &
+		{{- range $m, $Z := .Zones -}}
+			{{if $m -}} \cline{5-9} & & & & {{end}}
+			{{.CurKwh}} & {{.PrevKwh}} & {{.Diff}} &
+			{{- $E.Ratio}} & {{.Energy}}
+			\\
+		{{end -}}
+	{{end -}}
+{{end}}
+
+\hline
+\multicolumn{8}{|r|}{Всього} & {{totalMonth}} \\
+\hline
+
+\end{tabular}
+
+} % Товщина ліній в таблиці
+
+\end{flushright}
+
+\end{document}
