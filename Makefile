@@ -1,10 +1,10 @@
 VERSION := $(shell git describe --tags --match 'v*' 2>/dev/null | sed 's/^v//')
-ifndef ${VERSION}
-	VERSION = 0.0.0
+ifeq ($(strip ${VERSION}),)
+	VERSION := 0.0.0
 endif
 HASH := $(shell git rev-parse --short HEAD  2>/dev/null)
-ifdef ${HASH}
-	HASH = -${HASH}
+ifneq ($(strip ${HASH}),)
+	HASH := -${HASH}
 endif
 BUILDTIME := $(shell date '+%Y%m%d%H%M%S')
 GOVARS = -X main.Version=${VERSION}-${BUILDTIME}${HASH} 
