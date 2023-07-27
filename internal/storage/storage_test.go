@@ -48,9 +48,9 @@ func TestGetActiveMeters(t *testing.T) {
 	stor := createDatabase(t)
 	meters := stor.GetActiveMeters()
 	want := []*Meter{
-		&Meter{1, 208, "1234567890abcdef", "Госпдвір",
+		{1, 208, "1234567890abcdef", "Госпдвір",
 			"НІК2301АП1", 2020, "344848", 4, 40},
-		&Meter{3, 205, "", "Контора",
+		{3, 205, "", "Контора",
 			"", 0, "001930", 5, 1},
 	}
 

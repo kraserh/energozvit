@@ -107,6 +107,7 @@ func (stor *Storage) Close() {
 	stor.DB.Close()
 }
 
+// GetFilepath повертає шлях до бази даних.
 func (stor *Storage) GetFilepath() string {
 	return stor.filepath
 }
@@ -595,7 +596,7 @@ func (stor *Storage) query(oneLine bool, query string, args ...any) ([][]string,
 	result := make([][]string, 0)
 	rowPtr := make([]any, col)
 	row := make([]sql.NullString, col)
-	for i, _ := range row {
+	for i := 0; i < col; i++ {
 		rowPtr[i] = &row[i]
 	}
 
