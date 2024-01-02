@@ -14,7 +14,7 @@ import (
 )
 
 // Версія бази даних яку підтримує ця програма.
-const dbVersion = 1
+const DBVERSION = 1
 
 //go:embed schema.sql
 var schema string
@@ -41,13 +41,6 @@ func Create(filepath string, firstDate time.Time) error {
 
 	// Створення схеми бази даних
 	_, err = db.Exec(schema)
-	if err != nil {
-		return (err)
-	}
-
-	// Версія бази даних
-	userVersion := fmt.Sprintf("PRAGMA user_version = %d", dbVersion)
-	_, err = db.Exec(userVersion)
 	if err != nil {
 		return (err)
 	}
@@ -95,7 +88,7 @@ func Open(filepath string) (*Storage, error) {
 	sqlite3.SQLiteTimestampFormats = []string{DateLayout}
 
 	// Перевірка версії
-	if stor.GetVersion() != dbVersion {
+	if stor.GetVersion() != DBVERSION {
 		err := errors.New("не підтримувана версія бази даних")
 		return nil, err
 	}

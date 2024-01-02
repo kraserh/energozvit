@@ -1,6 +1,7 @@
 -- EnergoZvit
 -- Sqlite database schema
 --
+PRAGMA user_version = 1;
 PRAGMA foreign_keys = ON;
 --
 -------------------------------- TABLES --------------------------------

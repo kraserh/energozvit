@@ -30,7 +30,7 @@ func createDatabase(t *testing.T) *Storage {
 		t.Fatalf("create database: %s", err)
 	}
 
-	diff := cmp.Diff(dbVersion, stor.GetVersion())
+	diff := cmp.Diff(DBVERSION, stor.GetVersion())
 	if diff != "" {
 		t.Errorf("mismatch (-want +got):\n%s", diff)
 	}
